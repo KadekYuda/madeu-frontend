@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Users, Search, Info, Phone, Mail, Package, TrendingUp, Activity, Sparkles } from "lucide-react";
 import api from "@/lib/axios";
+import { AxiosError } from "axios";
 
 interface Student {
   uuid: string;
@@ -35,8 +36,12 @@ export default function DashboardManager() {
       const response = await api.get("/manager/students");
       setStudents(response.data?.data || []);
     } catch (err) {
-      const error = err as any;
-      setError(error.response?.data?.message || "Gagal memuat data siswa");
+      const error = err as AxiosError<{ message: string }>;
+      if (error.isAxiosError && error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Gagal memuat data siswa");
+      }
       console.error("Error fetching students:", err);
     } finally {
       setLoading(false);

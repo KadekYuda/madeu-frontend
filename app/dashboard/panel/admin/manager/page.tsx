@@ -20,6 +20,7 @@ import {
   ManagerDetailModal,
 } from "@/app/dashboard/components/modals";
 import PerPageSelect from "@/app/dashboard/components/SelectPerPage";
+import { AxiosError } from "axios";
 
 interface Manager extends Record<string, unknown> {
   id: string;
@@ -191,8 +192,12 @@ export default function ManagerPage() {
       setManagers(response.data?.data || []);
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const error = err as any;
-      setError(error.response?.data?.message || "Gagal memuat data manager");
+      const error = err as AxiosError<{ message: string }>;
+      if (error.isAxiosError && error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Gagal memuat data manager");
+      }
       console.error("Error fetching managers:", err);
     } finally {
       setLoading(false);
@@ -219,8 +224,8 @@ export default function ManagerPage() {
       setCreateError(null);
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const error = err as any;
-      const message = error.response?.data?.message || "Gagal membuat manager";
+      const error = err as AxiosError<{ message: string }>;
+      const message = (error.isAxiosError && error.response?.data?.message) || "Gagal membuat manager";
       setCreateError(message);
       throw new Error(message);
     }
@@ -249,8 +254,8 @@ export default function ManagerPage() {
       setSelectedManager(null);
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const error = err as any;
-      const message = error.response?.data?.message || "Gagal update manager";
+      const error = err as AxiosError<{ message: string }>;
+      const message = (error.isAxiosError && error.response?.data?.message) || "Gagal update manager";
       setEditError(message);
       throw new Error(message);
     }

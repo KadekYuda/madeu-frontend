@@ -19,6 +19,7 @@ import {
 import Pagination from "@/app/dashboard/components/pagination";
 import PerPageSelect from "@/app/dashboard/components/SelectPerPage";
 import InstrumenIcon from "@/app/dashboard/components/InstrumenIcon";
+import { AxiosError } from "axios";
 
 interface Teacher extends Record<string, unknown> {
   id: string;
@@ -229,8 +230,12 @@ export default function TeacherPage() {
       setInstruments(instrumentsRes.data?.data || []);
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const error = err as any;
-      setError(error.response?.data?.message || "Gagal memuat data teacher");
+      const error = err as AxiosError<{ message: string }>;
+      if (error.isAxiosError && error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Gagal memuat data teacher");
+      }
       console.error("Error fetching data:", err);
     } finally {
       setLoading(false);
@@ -259,8 +264,8 @@ export default function TeacherPage() {
       setCreateError(null);
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const error = err as any;
-      const message = error.response?.data?.message || "Gagal membuat teacher";
+      const error = err as AxiosError<{ message: string }>;
+      const message = (error.isAxiosError && error.response?.data?.message) || "Gagal membuat teacher";
       setCreateError(message);
       throw new Error(message);
     }
@@ -295,10 +300,10 @@ export default function TeacherPage() {
       setSelectedTeacher(null);
     } catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const error = err as any;
+      const error = err as AxiosError<{ message: string }>;
       console.error("Full error:", error);
       console.error("Error response:", error.response);
-      const message = error.response?.data?.message || "Gagal update teacher";
+      const message = (error.isAxiosError && error.response?.data?.message) || "Gagal update teacher";
       setEditError(message);
       throw new Error(message);
     }
@@ -540,17 +545,17 @@ export default function TeacherPage() {
                   console.log("Teacher data:", teacher);
                   
                   // Extract instruments from teacher_profile
-                  const instruments = (teacher.teacher_profile as any)?.instruments || [];
+                  const instruments = teacher.teacher_profile?.instruments || [];
                   console.log("Teacher instruments:", instruments);
                   
                   // Prepare teacher data with instrument_ids extracted from teacher_profile.instruments
-                  const instrumentIds = instruments.map((inst: any) => inst.id) || [];
+                  const instrumentIds = instruments.map((inst) => inst.id) || [];
                   console.log("Extracted instrument_ids:", instrumentIds);
                   
-                  const teacherData = {
+                  const teacherData: Teacher = {
                     ...teacher,
                     instrument_ids: instrumentIds,
-                    bio: (teacher.teacher_profile as any)?.bio || "",
+                    bio: teacher.teacher_profile?.bio || "",
                   };
                   console.log("Final teacher data for edit:", teacherData);
                   

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Users, Search, Info, Edit3, X, Mail, Phone, Music, Sparkles, TrendingUp, Package } from "lucide-react";
 import api from "@/lib/axios"
+import { AxiosError } from "axios";
 
 interface PackageData {
   id: number;
@@ -52,8 +53,12 @@ export default function MyStudentPage() {
       const response = await api.get("/manager/students");
       setStudents(response.data?.data || []);
     } catch (err) {
-      const error = err as any;
-      setError(error.response?.data?.message || "Gagal memuat data siswa");
+      const error = err as AxiosError<{ message: string }>;
+      if (error.isAxiosError && error.response?.data?.message) {
+        setError(error.response.data.message);
+      } else {
+        setError("Gagal memuat data siswa");
+      }
       console.error("Error fetching students:", err);
     } finally {
       setLoading(false);
@@ -90,8 +95,9 @@ export default function MyStudentPage() {
       setEditingStudent(null);
       setNewQuota("");
     } catch (err) {
-      const error = err as any;
-      alert(error.response?.data?.message || "Gagal update quota");
+      const error = err as AxiosError<{ message: string }>;
+      const message = (error.isAxiosError && error.response?.data?.message) || "Gagal update quota";
+      alert(message);
     } finally {
       setUpdateLoading(false);
     }

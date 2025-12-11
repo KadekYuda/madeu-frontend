@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import api from "@/lib/axios";
 import { toast } from "react-hot-toast";
+import { AxiosError } from "axios";
 
 interface TimeSlot {
   day_of_the_week: string[];
@@ -73,8 +74,10 @@ export default function TeacherClassPage() {
       if (response.data.success) {
         setAvailableClasses(response.data.data || []);
       }
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Gagal mengambil jadwal tersedia");
+    } catch (err) {
+      const error = err as AxiosError<{ error: string }>;
+      const message = (error.isAxiosError && error.response?.data?.error) || "Gagal mengambil jadwal tersedia";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -88,8 +91,10 @@ export default function TeacherClassPage() {
       if (response.data.success) {
         setBookedClasses(response.data.data || []);
       }
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Gagal mengambil kelas terbooking");
+    } catch (err) {
+      const error = err as AxiosError<{ error: string }>;
+      const message = (error.isAxiosError && error.response?.data?.error) || "Gagal mengambil kelas terbooking";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -113,8 +118,10 @@ export default function TeacherClassPage() {
         toast.success("Jadwal berhasil dihapus");
         fetchAvailableClasses();
       }
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Gagal menghapus jadwal");
+    } catch (err) {
+      const error = err as AxiosError<{ error: string }>;
+      const message = (error.isAxiosError && error.response?.data?.error) || "Gagal menghapus jadwal";
+      toast.error(message);
     }
   };
 
@@ -438,8 +445,10 @@ function CreateAvailabilityModal({
         toast.success("Jadwal berhasil ditambahkan");
         onSuccess();
       }
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Gagal menambah jadwal");
+    } catch (err) {
+      const error = err as AxiosError<{ error: string }>;
+      const message = (error.isAxiosError && error.response?.data?.error) || "Gagal menambah jadwal";
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
@@ -621,8 +630,10 @@ function FinishClassModal({
         toast.success("Kelas berhasil diselesaikan");
         onSuccess();
       }
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Gagal menyelesaikan kelas");
+    } catch (err) {
+      const error = err as AxiosError<{ error: string }>;
+      const message = (error.isAxiosError && error.response?.data?.error) || "Gagal menyelesaikan kelas";
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
