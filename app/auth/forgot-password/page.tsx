@@ -1,11 +1,10 @@
 "use client";
 
 import { useSearchParams, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { useEffect, Suspense } from "react";
 import ForgetPass from "./ForgotPass";
 
-
-export default function ForgotPasswordPage() {
+function ForgotPasswordContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const verified = searchParams.get("verified");
@@ -17,5 +16,13 @@ export default function ForgotPasswordPage() {
     }
   }, [verified, email, router]);
 
-  return  <ForgetPass />;
+  return <ForgetPass />;
+}
+
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ForgotPasswordContent />
+    </Suspense>
+  );
 }

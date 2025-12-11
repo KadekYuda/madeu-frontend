@@ -7,7 +7,6 @@ import {
   Camera,
   Save,
   X,
-  Package,
   Upload,
   Key,
   Edit3,
