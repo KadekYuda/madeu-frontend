@@ -425,7 +425,9 @@ function CreateAvailabilityModal({
       const normalizedSlots = slots.map((slot) => {
         const normalizeTime = (time: string) => {
           if (!time) return "";
-          let [hours, minutes] = time.split(":").map(Number);
+          const timeParts = time.split(":").map(Number);
+          let hours = timeParts[0];
+          const minutes = timeParts[1];
           if (hours >= 1 && hours < 7) hours += 12; // 01:00 → 13:00
           return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
         };
@@ -613,7 +615,9 @@ function FinishClassModal({
     try {
       const normalizeTime = (time: string) => {
         if (!time) return "";
-        let [hours, minutes] = time.split(":").map(Number);
+        const timeParts = time.split(":").map(Number);
+        let hours = timeParts[0];
+        const minutes = timeParts[1];
         if (hours >= 1 && hours < 7) hours += 12;
         return `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}`;
       };
