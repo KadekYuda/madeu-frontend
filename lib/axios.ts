@@ -1,8 +1,16 @@
 // lib/axios.ts
 import axios from 'axios';
 
+// Validate API URL
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+if (!API_URL) {
+  console.error('❌ NEXT_PUBLIC_API_URL is not defined!');
+  console.error('Please set NEXT_PUBLIC_API_URL in your environment variables');
+}
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL,
+  baseURL: API_URL || 'http://localhost:8080',
   withCredentials: true,
 });
 
